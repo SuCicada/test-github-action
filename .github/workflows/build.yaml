@@ -22,7 +22,14 @@ jobs:
           java-version: 8
       # step：打包apk
       - name: Build with Gradle
+        id: issue
         run: |
           echo "Issue title: ${{ github.event.issue.title }}"
           echo "Issue body: ${{ github.event.issue.body }}"
 #        chmod +x gradlew &&./gradlew assembleRelease
+
+      - name: sd sdf
+        env:
+          BODY: ${{ steps.issue }}
+        run: |
+            echo${{env.BODY}}
