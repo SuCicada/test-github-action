@@ -23,13 +23,16 @@ jobs:
       # step：打包apk
       - name: Build with Gradle
         id: issue
+        env:
+          TITLE: ${{ github.event.issue.title }}
         run: |
-          echo "Issue title: ${{ github.event.issue.title }}"
+          echo "Issue title: $TITLE"
           echo "Issue body: ${{ github.event.issue.body }}"
-#        chmod +x gradlew &&./gradlew assembleRelease
+          echo "::set-output name=title::$TITLE"
+      #        chmod +x gradlew &&./gradlew assembleRelease
 
       - name: sd sdf
         env:
-          BODY: ${{ steps.issue }}
+          BODY: ${{ steps.issue.title }}
         run: |
             echo${{env.BODY}}
