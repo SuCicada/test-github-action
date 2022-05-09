@@ -37,3 +37,6 @@ jobs:
           BODY: ${{ steps.issue.outputs.title }}
         run: |
             echo ${{env.BODY}}
+      - uses: hramos/label-actions@v1
+        comment: |
+          Can you add reproduction steps to the issue?
