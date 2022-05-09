@@ -33,6 +33,6 @@ jobs:
 
       - name: sd sdf
         env:
-          BODY: ${{ steps.issue.title }}
+          BODY: ${{ steps.issue.outputs.title }}
         run: |
-            echo${{env.BODY}}
+            echo ${{env.BODY}}
