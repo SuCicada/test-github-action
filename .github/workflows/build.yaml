@@ -4,13 +4,14 @@ name: Build
 # 在满足以下条件触发这个workflow
 on:
   issues:
-    types: [ opened ]
+    types: [ opened,labeled ]
     # 指定文件发生修改
 #    paths:
 #      - 'config.gradle'
 jobs:
   first-job:
     runs-on: ubuntu-latest
+    if: ${{ github.event.label.name == 'build' }}
     steps:
       # step：检查分支
       - name: Checkout # 将仓库内master分支的内容下载到工作目录
