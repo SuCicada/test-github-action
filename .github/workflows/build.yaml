@@ -8,6 +8,9 @@ on:
     # 指定文件发生修改
 #    paths:
 #      - 'config.gradle'
+permissions:
+  issues: write
+
 jobs:
   first-job:
     if: ${{ github.event.label.name == 'build' }}
