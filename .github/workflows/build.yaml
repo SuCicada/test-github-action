@@ -10,17 +10,17 @@ on:
 #      - 'config.gradle'
 jobs:
   first-job:
-    runs-on: ubuntu-latest
     if: ${{ github.event.label.name == 'build' }}
+    runs-on: ubuntu-latest
     steps:
       # step：检查分支
       - name: Checkout # 将仓库内master分支的内容下载到工作目录
         uses: actions/checkout@v1
       # step：设置jdk版本
-      - name: set up JDK 8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
+#      - name: set up JDK 8
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 8
       # step：打包apk
       - name: Build with Gradle
         id: issue
@@ -37,14 +37,15 @@ jobs:
           BODY: ${{ steps.issue.outputs.title }}
         run: |
             echo ${{env.BODY}}
-      - name: Create comment
-          uses: peter-evans/create-or-update-comment@v2
-          with:
-            issue-number: 1
-            body: |
-              This is a multi-line test comment
-              - With GitHub **Markdown** :sparkles:
-              - Created by [create-or-update-comment][1]
 
-              [1]: https://github.com/peter-evans/create-or-update-comment
-            reactions: '+1'
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+
+            [1]: https://github.com/peter-evans/create-or-update-comment
+          reactions: '+1'
