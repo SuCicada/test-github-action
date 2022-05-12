@@ -93,7 +93,8 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           state: close
           body: |
-            Build APK Success: ${{env.APP_NAME}}
+            @${{ github.actor }}
+            Build APK Success: **${{env.APP_NAME}}**
             Download: ${{env.APP_URL}}
           reactions: '+1'
       - name: add label on success
@@ -109,7 +110,9 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            Build APK Failure: ${{ steps.get_app_name.outputs.app_name }}
+            @${{ github.actor }}
+            Build APK Failure: **${{ steps.get_app_name.outputs.app_name }}**
+            log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           reactions: '-1'
       - name: add label on failure
         if: failure()
