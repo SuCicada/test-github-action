@@ -5,8 +5,8 @@ on:
     types: [ opened,labeled ]
 
 # permissions of github action bot
-permissions:
-  issues: write
+permissions: write-all
+#  issues: write
 
 jobs:
   build:
@@ -114,6 +114,7 @@ jobs:
           add-labels: "failure"
 
       - name: Close Issue
+        if: always()
         uses: peter-evans/close-issue@v2
         with:
           issue-number: ${{ github.event.issue.number }}
