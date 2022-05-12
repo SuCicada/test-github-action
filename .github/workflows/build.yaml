@@ -128,30 +128,29 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           comment: Auto-closing issue
 
-#      - name: send telegram message on success
-#        if: success()
-#        uses: appleboy/telegram-action@master
-#        with:
-#          to: ${{ secrets.TELEGRAM_TO }}
-#          token: ${{ secrets.TELEGRAM_TOKEN }}
-#          format: markdown
-#          disable_web_page_preview: true
-#          message: |
-#            *[Build SUCCESS]* ${{ github.repository }}
-#
-#            Commit message: ${{ github.event.commits[0].message }}
-#
-#            [See Changes](https://github.com/${{ github.repository }}/commit/${{github.sha}})
-#
-#      - name: send telegram message on failure
-#        if: failure()
-#        uses: appleboy/telegram-action@master
-#        with:
-#          to: ${{ secrets.TELEGRAM_TO }}
-#          token: ${{ secrets.TELEGRAM_TOKEN }}
-#          format: markdown
-#          disable_web_page_preview: true
-#          message: |
-#            *[Build FAILURE]* ${{ github.repository }}
-#
-#            [See
+      - name: send telegram message on success
+        if: success()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          disable_web_page_preview: true
+          message: |
+            *[Build SUCCESS]* ${{ github.repository }}
+            APK: ${{ steps.get_app_name.outputs.app_name }}
+            [See Issue](https://github.com/${{github.repository}}/issues/${{github.event.issue.number}}
+
+      - name: send telegram message on failure
+        if: failure()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          disable_web_page_preview: true
+          message: |
+            *[Build FAILURE]* ${{ github.repository }}
+            APK: ${{ steps.get_app_name.outputs.app_name }}
+            [See Issue](https://github.com/${{github.repository}}/issues/${{github.event.issue.number}}
+            [See Error Log](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
