@@ -1,54 +1,141 @@
-# workflow的名称，会显示在github 的项目的Actions的右边列表中，如下图
 name: Build
 
-# 在满足以下条件触发这个workflow
 on:
   issues:
     types: [ opened,labeled ]
-    # 指定文件发生修改
-#    paths:
-#      - 'config.gradle'
+
+# permissions of github action bot
 permissions:
   issues: write
 
 jobs:
-  first-job:
+  build:
     if: ${{ github.event.label.name == 'build' }}
     runs-on: ubuntu-latest
     steps:
-      # step：检查分支
-      - name: Checkout # 将仓库内master分支的内容下载到工作目录
-        uses: actions/checkout@v1
-      # step：设置jdk版本
-#      - name: set up JDK 8
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 8
-      # step：打包apk
+      # clone main program
+      - name: clone website-to-android
+        uses: actions/checkout@v3
+        with:
+          repository: SuCicada/website-to-android
+      # =============  build ===================================
+      - name: set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'gradle'
+
       - name: Build with Gradle
-        id: issue
+        run: |
+          echo "${{ github.event.issue.body }}" > config.properties
+          cat config.properties
+          chmod +x gradlew &&./gradlew assembleRelease
+
+      # =============  upload ===================================
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HHmm
+
+      - name: Get APP Name
+        id: get_app_name
         env:
           TITLE: ${{ github.event.issue.title }}
+          USER: ${{ github.event.issue.sender.login }}
+          F_TIME: ${{ steps.current-time.outputs.formattedTime }}
         run: |
-          echo "Issue title: $TITLE"
-          echo "Issue body: ${{ github.event.issue.body }}"
-          echo "::set-output name=title::$TITLE"
-      #        chmod +x gradlew &&./gradlew assembleRelease
+          app_name="${USER}-${TITLE}-${F_TIME}.apk"
+          echo "::set-output name=app_name::$app_name"
 
-      - name: sd sdf
+      - name: Get upload URL
+        id: geturl
+        run: |
+          upload_url=$(curl -sL https://api.github.com/repos/${{github.repository}}/releases/latest | jq -r '.upload_url')
+          echo ::set-output name=upload_url::$upload_url
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
-          BODY: ${{ steps.issue.outputs.title }}
-        run: |
-            echo ${{env.BODY}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.geturl.outputs.upload_url }}
+          asset_path: ./app/build/outputs/apk/release/app-release.apk
+          asset_name: ${{ steps.get_app_name.outputs.app_name }}
+          asset_content_type: application/zip
 
-      - name: Create comment
+      # =============  comment ===================================
+
+      - name: Create comment on success
+        if: success()
         uses: peter-evans/create-or-update-comment@v2
+        env:
+          APP_NAME: ${{ steps.get_app_name.outputs.app_name }}
+          APP_URL: ${{ steps.upload-release-asset.outputs.browser_download_url }}
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          state: close
+          body: |
+            Build APK Success: ${{env.APP_NAME}}
+            Download: ${{env.APP_URL}}
+          reactions: '+1'
+
+      - name: add label on success
+        if: success()
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "success"
+
+
+      - name: Create comment on failure
+        if: failure()
+        uses: peter-evans/create-or-update-comment@v2
+        env:
+          APP_NAME: ${{ steps.get_app_name.outputs.app_name }}
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
+            Build APK Failure: ${{env.APP_NAME}}
+          reactions: '-1'
+      - name: add label  on failure
+        if: failure()
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "failure"
 
-            [1]: https://github.com/peter-evans/create-or-update-comment
-          reactions: '+1'
+      - name: Close Issue
+        uses: peter-evans/close-issue@v2
+        with:
+          issue-number: 1
+          comment: Auto-closing issue
+
+#      - name: send telegram message on success
+#        if: success()
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.TELEGRAM_TO }}
+#          token: ${{ secrets.TELEGRAM_TOKEN }}
+#          format: markdown
+#          disable_web_page_preview: true
+#          message: |
+#            *[Build SUCCESS]* ${{ github.repository }}
+#
+#            Commit message: ${{ github.event.commits[0].message }}
+#
+#            [See Changes](https://github.com/${{ github.repository }}/commit/${{github.sha}})
+#
+#      - name: send telegram message on failure
+#        if: failure()
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.TELEGRAM_TO }}
+#          token: ${{ secrets.TELEGRAM_TOKEN }}
+#          format: markdown
+#          disable_web_page_preview: true
+#          message: |
+#            *[Build FAILURE]* ${{ github.repository }}
+#
+#            [See
