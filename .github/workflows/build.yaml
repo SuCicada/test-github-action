@@ -13,7 +13,11 @@ jobs:
     if: ${{ github.event.label.name == 'build' }}
     runs-on: ubuntu-latest
     steps:
-      # clone main program
+      - name: add label named running
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "running"
+
       - name: clone website-to-android
         uses: actions/checkout@v3
         with:
@@ -97,7 +101,7 @@ jobs:
         uses: andymckay/labeler@master
         with:
           add-labels: "success"
-
+          remove-labels: "running"
 
       - name: Create comment on failure
         if: failure()
@@ -112,6 +116,7 @@ jobs:
         uses: andymckay/labeler@master
         with:
           add-labels: "failure"
+          remove-labels: "running"
 
       - name: Close Issue
         if: always()
