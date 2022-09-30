@@ -1,10 +1,9 @@
-name: kind
+name: example-ngrok-kind-v2
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  hello:
+  example-ngrok-kind-v2:
     runs-on: ubuntu-latest
     steps:
       - name: Creating kind cluster
