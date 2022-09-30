@@ -1,0 +1,171 @@
+# workflow的名称，会显示在github 的项目的Actions的右边列表中，如下图
+name: Build
+
+# 在满足以下条件触发这个workflow
+on:
+  issues:
+    types: [ opened,labeled ]
+    # 指定文件发生修改
+#    paths:
+#      - 'config.gradle'
+permissions:
+  issues: write
+
+jobs:
+  build:
+    if: ${{ github.event.label.name == 'build' }}
+    runs-on: ubuntu-latest
+    steps:
+      # step：检查分支
+      - name: Checkout # 将仓库内master分支的内容下载到工作目录
+        uses: actions/checkout@v3
+        with:
+          name: SuCicada/website-to-android
+#      - run: |
+#          ip=192.168.65.2
+#          export http_proxy=http://$ip:10809
+#          export https_proxy=http://$ip:10809
+#          export all_proxy=http://$ip:10809
+#          ip a
+#          ifconfig
+#      - run : |
+#          env
+#          curl -L pixiv.net
+
+#       step：设置jdk版本
+      - name: set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'gradle'
+
+      # step：打包apk
+      - name: Build with Gradle
+        id: issue
+        env:
+          TITLE: ${{ github.event.issue.title }}
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          echo "Issue title: $TITLE"
+          echo "$BODY" > args.properties
+          ls -l args.properties
+          cat args.properties
+          echo "::set-output name=title::$TITLE"
+      #        chmod +x gradlew &&./gradlew assembleRelease
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HHmm
+      - name: Get APP Name
+        id: get-app-name
+        env:
+          TITLE: ${{ steps.issue.outputs.title }}
+          USER: ${{ github.event.issue.sender.login }}
+          F_TIME: ${{ steps.current-time.outputs.formattedTime }}
+        run: |
+          app_name="${USER}-${TITLE}-${F_TIME}.apk"
+          echo "::set-output name=app_name::$app_name"
+#          echo "app_name: $app_name"
+
+#      - name: make sure app name
+#        env:
+#          APP_NAME: ${{ steps.get-app-name.outputs.app_name }}
+#          aaa: ${{ env.APP_NAME }}
+#        run: |
+#          echo  ======= $aa =============
+#            echo  ======= $APP_NAME =============
+
+#      - name: Create Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          APP_NAME: "${{ steps.get-app-name.outputs.app_name }}"
+#        with:
+#          tag_name: "${{ steps.get-app-name.outputs.app_name }}"
+#          release_name: ${{ env.APP_NAME }}
+#          body: |
+#            ${{env.APP_NAME}}
+      - name: Get upload URL
+        id: geturl
+        run:   |
+          upload_url=$(curl -sL https://api.github.com/repos/${{github.repository}}/releases/latest | jq -r '.upload_url')
+          echo ::set-output name=upload_url::$upload_url
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AAA: "${{ steps.get_app_name.outputs.app_name }}"
+        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ steps.geturl.outputs.upload_url }}
+          asset_path: ./app/build/outputs/apk/release/app-release.apk
+          asset_name: ${{ steps.geturl.outputs.upload_url }}
+          asset_content_type: application/zip
+      - name: Close Issue
+        uses: peter-evans/close-issue@v2
+        with:
+          issue-number: 1
+          comment: Auto-closing issue
+
+#      - name: sd sdf
+#        env:
+#          BODY: ${{ steps.issue.outputs.title }}
+#        run: |
+#            echo ${{env.BODY}}
+
+#      - name: Create comment on success
+#        if: success()
+#        uses: peter-evans/create-or-update-comment@v2
+#        env:
+#          APP_NAME: ${{ steps.get_app_name.outputs.app_name }}
+#          APP_URL: ${{ steps.upload-release-asset.outputs.browser_download_url }}
+#        with:
+#          issue-number: ${{ github.event.issue.number }}
+#          body: |
+#            Build APK Success: ${{env.APP_NAME}}
+#            Download: ${{env.APP_URL}}
+#          reactions: '+1'
+#
+#      - name: Create comment on failure
+#        if: failure()
+#        uses: peter-evans/create-or-update-comment@v2
+#        env:
+#          APP_NAME: ${{ steps.get_app_name.outputs.app_name }}
+#        with:
+#          issue-number: ${{ github.event.issue.number }}
+#          body: |
+#            Build APK Failure: ${{env.APP_NAME}}
+#          reactions: '-1'
+
+
+#      - name: send telegram message on success
+#        if: success()
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.TELEGRAM_TO }}
+#          token: ${{ secrets.TELEGRAM_TOKEN }}
+#          format: markdown
+#          disable_web_page_preview: true
+#          message: |
+#            *[Build SUCCESS]* ${{ github.repository }}
+#
+#            Commit message: ${{ github.event.commits[0].message }}
+#
+#            [See Changes](https://github.com/${{ github.repository }}/commit/${{github.sha}})
+#
+#      - name: send telegram message on failure
+#        if: failure()
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.TELEGRAM_TO }}
+#          token: ${{ secrets.TELEGRAM_TOKEN }}
+#          format: markdown
+#          disable_web_page_preview: true
+#          message: |
+#            *[Build FAILURE]* ${{ github.repository }}
+#
+#            [See
