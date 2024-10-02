@@ -18,6 +18,8 @@ jobs:
       - run: |
           ls
           pwd
+          sleep 60
+      - run: echo "Hello, world!"
 
 workflows:
   my-custom-workflow:
