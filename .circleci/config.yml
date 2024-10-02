@@ -9,4 +9,8 @@ jobs:
     machine: true
     resource_class: sucicada/test
     steps:
-      - run: echo "Hi I'm on Runners!"
+      - run:  
+          echo "Hi I'm on Runners!"
+          ls
+          sleep 10
+          uname -a
