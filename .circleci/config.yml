@@ -10,12 +10,14 @@ executors:
           password: $DOCKER_HUB_PASSWORD
 jobs:
   my-job-name:
-
-    executor: my-custom-executor
+    machine: true
+    resource_class: sucicada/test
+    # executor: my-custom-executor
     steps:
       - checkout
       - run: |
           ls
+          pwd
 
 workflows:
   my-custom-workflow:
