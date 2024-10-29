@@ -24,7 +24,8 @@ jobs:
       - run: |
           ls
           pwd
-          sleep 60
+          # sleep 60
+          docker run ubuntu "cat /etc/os-release"
       - run: echo "Hello, world!"aaa
 
 workflows:
