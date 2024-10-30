@@ -1,5 +1,7 @@
-sleep 3
+# sleep 3
 # ls asdf jj
+source ~/.bashrc  
+
 # asdfsdfsa ad aasdfaasfdaasda a  a aasdf
 whoami
 env-sync.rb download -y
