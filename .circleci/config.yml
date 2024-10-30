@@ -25,7 +25,8 @@ jobs:
           ls
           pwd
           # sleep 60
-          docker run ubuntu "cat /etc/os-release"
+          docker run ubuntu --remove "cat /etc/os-release"
+          sh test.sh
       - run: echo "Hello, world!"aaa
 
 workflows:
