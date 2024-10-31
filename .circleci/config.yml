@@ -31,9 +31,12 @@ jobs:
           # echo "export TEST_NAME=nihaonihaoh" >> bashrc
           # echo "export TEST_NAME=22222" >> "$BASH_ENV"
           source "$BASH_ENV" && bash test.sh
+          # source bashrc && bash test.sh
+          # source bashrc && echo TEST_NAME $TEST_NAME
+          bash -c "source ~/.bashrc && bash test.sh"
+          ln -s ~/.bashrc bashrc
           source bashrc && bash test.sh
           source bashrc && echo TEST_NAME $TEST_NAME
-          bash -c "source ~/.bashrc && bash test.sh"
       - run: echo "Hello, world!"aaa
 
 workflows:
