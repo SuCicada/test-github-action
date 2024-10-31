@@ -24,7 +24,7 @@ jobs:
       - run: |
           ls
           pwd
-          sleep 60
+          # sleep 60
           echo "export TEST_NAME=nihaonihaoh" >> test.sh
           # docker run --rm ubuntu cat /etc/os-release
           source test.sh && bash test.sh
