@@ -2,7 +2,7 @@
 # ls asdf jj
 echo TEST_NAME $TEST_NAME
 source ~/.bashrc
-
+cat ~/.bashrc
 
 # asdfsdfsa ad aasdfaasfdaasda a  a aasdf
 whoami
