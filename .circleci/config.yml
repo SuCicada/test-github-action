@@ -24,9 +24,9 @@ jobs:
       - run: |
           ls
           pwd
-          # sleep 60
           # docker run --rm ubuntu cat /etc/os-release
           bash -c "source ~/.bashrc && bash test.sh"
+          sleep 60
       - run: echo "Hello, world!"aaa
 
 workflows:
