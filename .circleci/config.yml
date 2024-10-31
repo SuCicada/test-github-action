@@ -24,9 +24,11 @@ jobs:
       - run: |
           ls
           pwd
-          # docker run --rm ubuntu cat /etc/os-release
-          bash -c "source ~/.bashrc && bash test.sh"
           sleep 60
+          echo "export TEST_NAME=nihaonihaoh" >> test.sh
+          # docker run --rm ubuntu cat /etc/os-release
+          source test.sh && bash test.sh
+          bash -c "source ~/.bashrc && bash test.sh"
       - run: echo "Hello, world!"aaa
 
 workflows:

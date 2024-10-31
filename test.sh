@@ -1,5 +1,6 @@
 # sleep 3
 # ls asdf jj
+echo TEST_NAME $TEST_NAME
 source ~/.bashrc
 
 
