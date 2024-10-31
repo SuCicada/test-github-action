@@ -8,8 +8,8 @@ source ~/.bashrc
 whoami
 # env
 echo SUTOOLS $SUTOOLS
-# env-sync.rb download -y
-# ls .env.test
-# cat .env.test
+env-sync.rb download -y
+ls .env.test
+cat .env.test
 
 # adfadfadsadfadf

@@ -19,24 +19,28 @@ jobs:
     machine: true
     resource_class: sucicada/test
     # executor: my-custom-executor
-    environment:
-      BASH_ENV: /home/circleci/.bashrc
+    # environment:
+      # BASH_ENV: /home/circleci/.bashrc
     steps:
       - checkout
       - run: |
+          ln /home/circleci/.sutools/profile $BASH_ENV
           ls
           pwd
           # sleep 60
           # docker run --rm ubuntu cat /etc/os-release
           # echo "export TEST_NAME=nihaonihaoh" >> bashrc
           # echo "export TEST_NAME=22222" >> "$BASH_ENV"
-          source "$BASH_ENV" && bash test.sh
+          # source "$BASH_ENV" && bash test.sh
           # source bashrc && bash test.sh
           # source bashrc && echo TEST_NAME $TEST_NAME
-          bash -c "source ~/.bashrc && bash test.sh"
-          ln -s ~/.bashrc bashrc
-          source bashrc && bash test.sh
-          source bashrc && echo TEST_NAME $TEST_NAME
+          # bash -c "source ~/.bashrc && bash test.sh"
+          # ls $BASH_ENV
+          # source $BASH_ENV && echo TEST_NAME $TEST_NAME
+          # ls -l bashrc
+          # cat bashrc
+          # source $BASH_ENV && 
+          bash test.sh
       - run: echo "Hello, world!"aaa
 
 workflows:
