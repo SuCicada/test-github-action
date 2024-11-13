@@ -10,7 +10,7 @@ executors:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PASSWORD
 orbs:
-  self_runner: sucicada/self-runner-env@0.0.1
+  self_runner: sucicada/self-runner-env@0.0.2
 
 jobs:
   build:
