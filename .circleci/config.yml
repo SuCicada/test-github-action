@@ -10,7 +10,7 @@ executors:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PASSWORD
 orbs:
-  self_runner: sucicada/self-runner-env@0.0.2
+  self_runner: sucicada/self-runner-env@0.0.3
 
 jobs:
   build:
@@ -27,6 +27,12 @@ jobs:
     steps:
       - checkout
       - self_runner/setup
+      # - run:
+      #     name: setup
+      #     command: |
+      #       bash /home/circleci/prepare_job.sh
+      #       source $BASH_ENV && env-sync.rb download -y
+
       - run: |
           # ln /home/circleci/.sutools/profile $BASH_ENV
           # sudo ln /etc/profile $BASH_ENV
@@ -48,15 +54,15 @@ jobs:
           # source $BASH_ENV && 
           bash test.sh
       - run: echo "Hello, world!"aaa
-      - run: 
-          command: |
-            curl --request POST 'http://server.sucicada.me:9083/notify/test' \
-              --data-urlencode "title=Job: $CIRCLE_JOB" \
-              --data-urlencode "body=Project:$CIRCLE_PROJECT_REPONAME \nBranch:$CIRCLE_BRANCH \nCommit:$CIRCLE_SHA1 \nAuthor:$CIRCLE_USERNAME \nCircleCI URL:$CIRCLE_BUILD_URL"
-          when: always
+      # - run: 
+      #     command: |
+      #       curl --request POST 'http://server.sucicada.me:9083/notify/test' \
+      #         --data-urlencode "title=Job: $CIRCLE_JOB" \
+      #         --data-urlencode "body=Project:$CIRCLE_PROJECT_REPONAME \nBranch:$CIRCLE_BRANCH \nCommit:$CIRCLE_SHA1 \nAuthor:$CIRCLE_USERNAME \nCircleCI URL:$CIRCLE_BUILD_URL"
+      #     when: always
 
 workflows:
   my-custom-workflow:
     jobs:
       - my-job-name
-      - build
+      # - build

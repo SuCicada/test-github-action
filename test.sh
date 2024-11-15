@@ -12,5 +12,5 @@ env-sync.rb download -y
 ls .env.test
 cat .env.test
 
-aaaaa
+# aaaaa
 # adfadfadsadfadf
